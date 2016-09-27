@@ -5,7 +5,8 @@ Insert articles into DB
 DB is hosted by Azure
 """
 
-import pymssql
+#import pymssql
+import pyodbc
 import yaml
 from login import loginSA
 from collectArticle import collectArticle
@@ -24,13 +25,14 @@ def insertDB(session, url):
 	user = keys['DBuser']
 	password = keys['DBpassword']
 	database = 'SeekingAlpha'
-	conn = pymssql.connect(server , user, password,database)
+	#conn = pymssql.connect(server , user, password,database)
+	cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+user+';PWD='+password)
 	cursor = conn.cursor()
 
 	#collect one article
 	article = collectArticle(session, url)
 	if type(article) is not dict:
-		return article;
+		return article
 	#print(article['title'])
 	now = datetime.datetime.now()
 
@@ -39,27 +41,24 @@ def insertDB(session, url):
 	# Please only add '\' with a white space before them. Otherwiase there maybe a disater as database name and '\' could be concated together
 	#print(article['articleUrl2'])
 	try:
+		
 		"""
-		cursor.execute("\
-		INSERT dbo.SeekingALpha_Articles (Title, Date, Time, TickersAbout, TickersIncludes, \
-			Name, NameLink, Bio, Summary, ImageDummy, BodyContent, Disclosure, Position, CreatedAt, UpdatedAt, BodyAll, ArticleNumber, ArticleUrl) \
-			VALUES (%s, %s, %s, %s, \
-			%s, %s, %s, %s, %s, \
-			%s, %s, %s, %s, %s, %s, %s, %s, %s) \
-		", (article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2']))
+		cursor.execute("insert into products(id, name) values (?, ?)", 'pyodbc', 'awesome library')
+		cnxn.commit()
 		"""
+
 		cursor.execute(" \
 		BEGIN \
 		IF NOT EXISTS (SELECT * FROM dbo.SeekingAlpha_Articles \
-		WHERE ArticleNumber = %s) \
+		WHERE ArticleNumber = ?) \
 		BEGIN \
 		INSERT dbo.SeekingALpha_Articles (Title, Date, Time, TickersAbout, TickersIncludes, \
 			Name, NameLink, Bio, Summary, ImageDummy, BodyContent, Disclosure, Position, CreatedAt, UpdatedAt, BodyAll, ArticleNumber, ArticleUrl) \
-			VALUES (%s, %s, %s, %s, \
-			%s, %s, %s, %s, %s, \
-			%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+			VALUES (?, ?, ?, ?, \
+			?, ?, ?, ?, ?, \
+			?, ?, ?, ?, ?, ?, ?, ?, ?) \
 		END \
-		END", (article['articleNumber'], article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2']))
+		END", article['articleNumber'], article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2'])
 		
 		conn.commit()
 		return "success"
