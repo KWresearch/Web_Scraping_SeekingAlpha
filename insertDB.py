@@ -26,7 +26,7 @@ def insertDB(session, url):
 	password = keys['DBpassword']
 	database = 'SeekingAlpha'
 	#conn = pymssql.connect(server , user, password,database)
-	cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+user+';PWD='+password)
+	conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+user+';PWD='+password)
 	cursor = conn.cursor()
 
 	#collect one article
@@ -35,30 +35,30 @@ def insertDB(session, url):
 		return article
 	#print(article['title'])
 	now = datetime.datetime.now()
-
+	#print(article['articleNumber'], article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2'])
 	# Insert into database if not exists
 	# we have 15 columns in this table
 	# Please only add '\' with a white space before them. Otherwiase there maybe a disater as database name and '\' could be concated together
 	#print(article['articleUrl2'])
 	try:
-		
-		"""
-		cursor.execute("insert into products(id, name) values (?, ?)", 'pyodbc', 'awesome library')
-		cnxn.commit()
-		"""
+
 
 		cursor.execute(" \
 		BEGIN \
 		IF NOT EXISTS (SELECT * FROM dbo.SeekingAlpha_Articles \
 		WHERE ArticleNumber = ?) \
 		BEGIN \
-		INSERT dbo.SeekingALpha_Articles (Title, Date, Time, TickersAbout, TickersIncludes, \
+		INSERT dbo.SeekingAlpha_Articles (Title, Date, Time, TickersAbout, TickersIncludes, \
 			Name, NameLink, Bio, Summary, ImageDummy, BodyContent, Disclosure, Position, CreatedAt, UpdatedAt, BodyAll, ArticleNumber, ArticleUrl) \
 			VALUES (?, ?, ?, ?, \
 			?, ?, ?, ?, ?, \
 			?, ?, ?, ?, ?, ?, ?, ?, ?) \
 		END \
-		END", article['articleNumber'], article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2'])
+		ELSE \
+		BEGIN \
+		UPDATE dbo.SeekingAlpha_Articles SET UpdatedAt = ? WHERE ArticleNumber = ? \
+		END \
+		END", article['articleNumber'], article['title'], article['date'], article['time'], article['tickersAbout'], article['tickersIncludes'], article['name'], article['nameLink'], article['bio'], article['summary'], article['imageDummy'], article['bodyContent'], article['disclosure'], None, now, now, article['bodyAll'], article['articleNumber'], article['articleUrl2'], now, article['articleNumber'])
 		
 		conn.commit()
 		return "success"
