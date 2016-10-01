@@ -12,3 +12,4 @@ SQLQuery3.sql
 *.csv
 *.xlsx
 .Rapp.history
+.vscode
