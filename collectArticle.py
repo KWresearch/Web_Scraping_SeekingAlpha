@@ -167,7 +167,7 @@ if __name__ == "__main__":
     #url4 is an empty page
     url4 = 'http://seekingalpha.com/symbol/BIIB/focus/10'
     test = 'http://seekingalpha.com/article/3981108-apple-focused-long-term-success-survival'
-    collectArticle(session, test)
+    print(collectArticle(session, test)["nameLink"])
 
 
 
