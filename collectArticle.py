@@ -166,8 +166,9 @@ if __name__ == "__main__":
     url3 = 'https://seekingalpha.com//article/3973979-ptcs-misunderstood-transformation-creates-rare-investment-opportunity'
     #url4 is an empty page
     url4 = 'http://seekingalpha.com/symbol/BIIB/focus/10'
-    test = 'http://seekingalpha.com/article/3981108-apple-focused-long-term-success-survival'
+    test = 'http://seekingalpha.com/article/4010696-altria-showing-40-percent-mo-money'
     print(collectArticle(session, test)["nameLink"])
+    print(collectArticle(session, test)["bodyAll"])
 
 
 

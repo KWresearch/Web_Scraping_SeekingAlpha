@@ -11,12 +11,13 @@ import re
 import yaml
 import pyodbc
 import datetime
-
+from time import sleep
 def getAuthorHomepageInfo(session, url):
     userHeaders = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"}
 
     r = session.get(url, headers = userHeaders)
     soup = BS(r.content, 'html.parser')
+    sleep(1)
     authorName = soup.find_all("div",{"class": "about-author-name"})[0].text
     authorImageUrl = soup.find_all("div", {"class": "about-author-image"})[0].img["src"]
     profileBioTruncate = soup.find_all("p", {"class": "profile-bio-truncate"})[0].text

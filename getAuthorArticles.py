@@ -11,9 +11,12 @@ from login import loginSA
 import json
 from collectArticle import collectArticle
 from insertDB import insertDB 
+import yaml
 def getAuthorArtilesOnePage(session, url):
+    keys = yaml.load(open("keys.yaml",'r'))
+    Cookie = keys['Cookie']
     baseUrl = "http://seekingalpha.com"
-    userHeaders = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"}
+    userHeaders = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36", "Cookie" = Cookie}
 
     #print(url)
 
