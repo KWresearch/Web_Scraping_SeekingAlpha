@@ -65,7 +65,7 @@ def insertDB(session, url):
 	except Exception as e:
 		print(e," insertDB failed.")
 		return "fail"
-
+	#articleNumber = int(url.split('article/')[1].split("-")[0])
 
 
 	# If you don't commit, then the inserted results will not be visual to others than local users.

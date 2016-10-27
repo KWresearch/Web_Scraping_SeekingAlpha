@@ -18,10 +18,13 @@ def getAuthorHomepageInfo(session, url):
     r = session.get(url, headers = userHeaders)
     soup = BS(r.content, 'html.parser')
     sleep(1)
-    authorName = soup.find_all("div",{"class": "about-author-name"})[0].text
-    authorImageUrl = soup.find_all("div", {"class": "about-author-image"})[0].img["src"]
-    profileBioTruncate = soup.find_all("p", {"class": "profile-bio-truncate"})[0].text
-    contributorSince = soup.find_all("div", {"class": "about-member-since"})[0].find_all("span")[1].text
+    try: 
+        authorName = soup.find_all("div",{"class": "about-author-name"})[0].text
+        authorImageUrl = soup.find_all("div", {"class": "about-author-image"})[0].img["src"]
+        profileBioTruncate = soup.find_all("p", {"class": "profile-bio-truncate"})[0].text
+        contributorSince = soup.find_all("div", {"class": "about-member-since"})[0].find_all("span")[1].text
+    except Exception as e:
+        print(e, url)
     try:
         numArticles = soup.find_all("a", {"data-profile-tab-name", "articles"})[0].i.text
     except Exception as e:
@@ -69,7 +72,7 @@ def getAuthorHomepageInfo(session, url):
         "authorURL": url
     }
 
-def getAuthorHomepageInfoAndFollowers(session, url):
+def getAuthorHomepageInfoAndFollowersFollowing(session, url):
     authorInfo = getAuthorHomepageInfo(session, url)
     insertAuthorDB(authorInfo)
     getFollowersList(session, url)
@@ -86,6 +89,7 @@ def getFollowersList(session, url):
     followers = []
     SAUrl = "http://seekingalpha.com"
     for page in range(0, 200):
+        print("Processing followers/following, page {0}".format(page))
         fullUrl = baseUrl + baseUrl1 + str(page) + baseUrl2
         #print(fullUrl)
         userHeaders = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"}
@@ -197,8 +201,9 @@ if __name__ == "__main__":
     url11 = "http://seekingalpha.com/author/max-greve/articles"
     url2 = "http://seekingalpha.com/user/741506/profile"
     url21 = "http://seekingalpha.com/user/5415171/profile"
+    test = "http://seekingalpha.com/user/877982/profile"
     session = loginSA()[1]
-    temp = getAuthorHomepageInfoAndFollowers(session, url21)
+    temp = getAuthorHomepageInfoAndFollowersFollowing(session, test)
     #print(temp) 
 
 

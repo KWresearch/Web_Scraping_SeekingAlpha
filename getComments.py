@@ -44,13 +44,15 @@ class getComments:
             print(commentInfo["name_link"])
             authorInfo = AHI.getAuthorHomepageInfo(session, commentInfo["name_link"])       
             AHI.insertAuthorDB(authorInfo)
-            self.insertCommentDB(commentInfo)
-            print("parent", self.count, commentInfo['id'])
-            self.getChildren(children)
+            if self.insertCommentDB(commentInfo) == "success":
+                print("parent", self.count, commentInfo['id'])
+            else: 
+                print("insert", commentInfo['id'], "failed")
+            self.getChildren(session, children)
 
             # please delete break
         return True
-    def getChildren(self, comments):
+    def getChildren(self, session, comments):
         if len(comments) == 0:
             return
         for commentID, comment in comments.items():
@@ -60,9 +62,12 @@ class getComments:
             # position to add some code to insert DB
             authorInfo = AHI.getAuthorHomepageInfo(session, commentInfo["name_link"])
             AHI.insertAuthorDB(authorInfo)
-            self.insertCommentDB(commentInfo)
-            print("child", self.count, commentInfo['id'])
-            getChildren(children)
+            if self.insertCommentDB(commentInfo) == "success":
+                print("child", self.count, commentInfo['id'])
+            else: 
+                print("insert", commentInfo['id'], "failed")
+            #print("child", self.count, commentInfo['id'])
+            self.getChildren(session, children)
     def insertCommentDB(self, comment):
         keys = yaml.load(open("keys.yaml",'r'))
         server = keys['DBserver']
